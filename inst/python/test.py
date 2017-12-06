@@ -18,7 +18,7 @@ print("\nplntfdb Query")
 for iter in query.query("plntfdb", ["321718"]):
     print(iter)
 print("\nSNP-Seek Query")
-for iter in query.query("snpseek", ["chr00", "1", "43270923", "rap"]):
+for iter in query.query("snpseek", ["chr01", "1", "43270923", "rap"]):
     print(iter)
 print("\nfunricegene Query")
 for iter in query.query("funricegene_genekeywords", ["","LOC_Os07g39750"]):
