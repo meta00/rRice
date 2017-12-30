@@ -18,7 +18,19 @@
             <field>rapId</field>
         </fields>
         <data_struct indicator="table" identifier="class" identification_string="table_summery_list table_nowrapTh max_width_element" line_separator="tr" cell_separator="td"/>
-        <prettify>\n>LOC_.*\n|\n|\r|\t</prettify>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
+    </database>
+    <database dbname="rnd" type="text/html" method="GET">
+        <link stern="http://bis.zju.edu.cn/ricenetdb/genenetwork.php?" aft=""/>
+        <headers>
+            <header type="">Upstream and Downstream Genes</header>
+        </headers>
+        <fields>
+            <field>UPID</field>
+			<field>DOWNID</field>
+        </fields>
+        <data_struct indicator="div" identifier="align" identification_string="center" line_separator="tr" cell_separator="td"/>
+        <prettify replaceBy=' '>\n>LOC_.*\n|\n|\r|\t|\xa0</prettify>
     </database>
     <database dbname="rapdb" type="text/html" method="GET">
         <link stern="http://rapdb.dna.affrc.go.jp/tools/search/run?" aft="&amp;submit=Search&amp;id=on&amp;size=10"/>
@@ -37,7 +49,7 @@
             <field>keyword</field>
         </fields>
         <data_struct indicator="table" identifier="id" identification_string="result_table" line_separator="tr" cell_separator="td"/>
-        <prettify>\n>LOC_.*\n|\n|\r|\t</prettify>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="gramene" type="text/JSON" method="GET">
         <link stern="http://data.gramene.org/v53/genes?" aft=""/>
@@ -60,7 +72,7 @@
             <field>term</field>
         </fields>
         <data_struct indicator="table" identifier="id" identification_string="dataTable" line_separator="tr" cell_separator="td"/>
-        <prettify>\n>LOC_.*\n|\n|\r|\t</prettify>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="plntfdb" type="text/html" method="GET">
         <link stern="http://plntfdb.bio.uni-potsdam.de/v3.0/get_id.php?" aft=""/>
@@ -73,7 +85,7 @@
             <field>seq_id</field>
         </fields>
         <data_struct indicator="div" identifier="id" identification_string="subcontent" line_separator="tr" cell_separator="td"/>
-        <prettify>\n>LOC_.*\n|\n|\r|\t</prettify>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="funricegene_genekeywords" type="text/csv" method="GET" encoding="Windows-1252" deli="&#009;">
         <link stern="https://funricegenes.github.io/geneKeyword.table.txt" aft=""/>
@@ -135,7 +147,7 @@
             <field>orf</field>
         </fields>
         <data_struct indicator="div" identifier="class" identification_string="content" line_separator="div" cell_separator="pre"/>
-        <prettify>\n>LOC_.*\n|\n|\r|\t</prettify>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="planttfdb" type="text/csv" method="downloadable">
         <link stern="http://planttfdb.cbi.pku.edu.cn/download.php" aft=""/>

@@ -87,6 +87,7 @@ query.query("oryzabase", ["Os03g0149100"])
 * SNP-Seek
 * funricegene
 * MSU
+* RiceNetDb
 
 ## List of exception
 
