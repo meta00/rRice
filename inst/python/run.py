@@ -78,6 +78,10 @@ def main():
     elif (db == "10"):
         dataMsu = msu.msu(id)
         print(dataMsu)
+        
+    elif (db == "10.1"):
+        dataMsu = msu.msu_orf(id)
+        print(dataMsu)        
 
                 # Ecriture fichier a revoir !!!!!!!!! pour les id et hashmap[iricname] et hashmpap [raprepname]
     elif (db == "13"):
