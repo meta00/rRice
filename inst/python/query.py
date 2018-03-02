@@ -56,7 +56,6 @@ def query(db, qfields=[]):
                            {database_descriptor[0].findAll("data_struct")[0]["identifier"]:
                             database_descriptor[0].findAll("data_struct")[0]["identification_string"]})
         result = []
-        count = 0
         if data != []:
             regex = re.compile(database_descriptor[0].findAll(
                 "prettify")[0].text, re.IGNORECASE)
@@ -96,10 +95,3 @@ def query(db, qfields=[]):
                     data.append(dict)
                 f += 1
         return data
-
-
-# def multiple_gene_query(db, geneList):
-#     ret = []
-#     for gene in geneList:
-#         ret.append(single_gene_query(db, gene))
-#     return ret

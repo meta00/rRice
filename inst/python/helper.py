@@ -66,13 +66,9 @@ def connectionError(link, data=""):
             res = requests.get(link, allow_redirects=False)
         if res.status_code != 200:
             raise Exception('Server Error: ' + str(res.status_code))
-            sys.exit(1)
+            # sys.exit(1)
         return res
 
     except requests.exceptions.RequestException:
         raise Exception("Internet Connection error")
-        sys.exit(1)
-
-    except requests.exceptions.Timeout:
-        raise Exception("Connection Timeout")
-        sys.exit(1)
+        # sys.exit(1)
