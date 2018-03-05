@@ -101,11 +101,11 @@ query.query("oryzabase", ["Os03g0149100"])
 
 ## List of supported format
 
-* Python Dictionary
-* JSON String
-* Pandas DataFrame
-* CSV
-* Excel (require openpyxl)
+* Python Dictionary - dict (Default)
+* JSON String - json
+* Pandas DataFrame - pandas
+* CSV - csv
+* Excel - excel (require openpyxl)
 
 ## List of exception
 
