@@ -1,2 +1,4 @@
 inst/doc
 .Rproj.user
+inst/python/rice.csv
+.gitignore

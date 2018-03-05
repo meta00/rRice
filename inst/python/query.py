@@ -2,10 +2,10 @@ import helper
 from bs4 import BeautifulSoup
 import json
 import re
+import pandas as pd
 import csv
 
-
-def query(db, qfields=[]):
+def query(db, qfields=[], outputFormat="dict", outputFile=None):
 
     # database descriptor querry
     database_descriptor = BeautifulSoup(open(
@@ -73,16 +73,15 @@ def query(db, qfields=[]):
                 if dict == {}:
                     continue
                 result.append(dict)
-        return result
     # Handle JSON based query
     elif(database_descriptor[0]["type"] == "text/JSON"):
         # Return as a List of Dictionary
-        return json.loads(res.content.decode("UTF-8"))
+        result = json.loads(res.content.decode("UTF-8"))
     # Handle csv based DB
     if(database_descriptor[0]["type"] == "text/csv"):
         ret = csv.reader(res.content.decode(database_descriptor[0]["encoding"]).splitlines(
         ), delimiter=list(database_descriptor[0]["deli"])[0], quoting=csv.QUOTE_NONE)
-        data = []
+        result = []
         for row in ret:
             i = 0
             dict = {}
@@ -92,6 +91,27 @@ def query(db, qfields=[]):
             f = 0
             for field in fields:
                 if (dict[field] == qfields[f]) & (qfields[f] != ""):
-                    data.append(dict)
+                    result.append(dict)
                 f += 1
-        return data
+    
+    # Handle different Output format
+    df = pd.DataFrame(result)
+    if(outputFormat == "dict"):
+        return result
+    elif(outputFormat == "pandas"):
+        return df
+    elif(outputFormat == "json"):
+        if (outputFile != None):
+            print("Query exported to ", outputFile)
+        return df.to_json(outputFile)
+    elif(outputFile == None):
+        print("Please specify a destination")
+        return
+    if(outputFormat == "csv"):
+        df.to_csv(outputFile)
+        print("Query exported to ", outputFile)
+        return
+    if(outputFormat == "excel"):
+        df.to_excel(outputFile)
+        print("Query exported to ", outputFile)
+        return

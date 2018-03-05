@@ -2,16 +2,20 @@
 
 ## Function
 
+### Query Module
+
 ```py
 query(db, qfields=[])
 ```
 
-Return a array of JSON Object corresponding to the query.
+Return a list corresponding to the query.
 
-Take 2 argument:
+Arguments:
 
 1. db: Database name, any database name that is exist in the database description file. Throw an exception if no db found under the name.
 1. qfields: list of argument for said database. The order of these argument follow the order of fields listed in the database description file.
+1. outputFormat: desired output format, Python Dictionary by default. Support CSV (csv), Excel (excel), Pandas' DataFrame (pandas).
+1. outputDestination: path to output file. Required if outputFormat is not default.
 
 ## Structure of Database description
 
@@ -33,10 +37,16 @@ Take 2 argument:
 
 ## Example
 
-### Example of system called query (Oryzabase)
+### Example of system called query (Oryzabase) - Default output
 
 ```bash
 python "run.py" oryzabase Os03g0149100
+```
+
+### Example of system called query - Oryzabase - Output to Excel file
+
+```bash
+python "run.py" oryzabase Os03g0149100 -f excel -o rice.xlsx
 ```
 
 ### Example of query (Oryzabase)
@@ -88,6 +98,14 @@ query.query("oryzabase", ["Os03g0149100"])
 * funricegene
 * MSU
 * RiceNetDb
+
+## List of supported format
+
+* Python Dictionary
+* JSON String
+* Pandas DataFrame
+* CSV
+* Excel (require openpyxl)
 
 ## List of exception
 

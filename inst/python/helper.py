@@ -6,6 +6,7 @@ import os
 import requests
 import sys
 import re
+import pandas as pd
 from bs4 import BeautifulSoup
 
 def existFile(pathToFile):
