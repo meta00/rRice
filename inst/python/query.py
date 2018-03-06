@@ -20,14 +20,12 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
     for header in database_descriptor[0].findAll("header"):
         headers.append(header.text)
     # Get query qfields list
-    fields = []
-    for field in database_descriptor[0].findAll("field"):
-        fields.append(field.text)
+    fields = database_descriptor[0].findAll("field")
 
     if database_descriptor[0]["method"] == "POST":
         i = 0
         for field in fields:
-            data = {field: qfields[i]}
+            data = {field.text: qfields[i]}
             i += 1
         res = helper.connectionError(link, data)
     elif database_descriptor[0]["method"] == "GET":
@@ -36,15 +34,18 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
             i = 0
             for field in fields:
                 # Detect controller field (always first field)
-                if field == "":
+                if "lowercase" in field:
+                    print(qfields[i].lower())
+                if field.text == "":
                     query_string += qfields[i] + "?"
                 # All other fields are query fields
                 else:
-                    query_string += field + "=" + qfields[i] + "&"
+                    query_string += field.text + field["op"] + qfields[i] + "&"
                 i += 1
             query_string = query_string[:-1]
             link += query_string + \
                 database_descriptor[0].findAll("link")[0]["aft"]
+            print(link)
         res = helper.connectionError(link)
 
     # Handle HTML based query
@@ -65,14 +66,14 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
                 dict = {}
                 i = 0
                 for dataCell in dataLine.findAll(database_descriptor[0].findAll("data_struct")[0]["cell_separator"]):
-                    #dataNearly = re.sub(r'\xa0',' ', dataCell.text)
-                    #dataFormat = regex.sub("", dataNearly)
                     dataFormat = regex.sub(replaceBy, dataCell.text)
                     dict[headers[i]] = dataFormat
                     i += 1
                 if dict == {}:
                     continue
+                dict.pop("", None)
                 result.append(dict)
+
     # Handle JSON based query
     elif(database_descriptor[0]["type"] == "text/JSON"):
         # Return as a List of Dictionary

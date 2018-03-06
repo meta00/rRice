@@ -26,8 +26,8 @@
             <header type="">Upstream and Downstream Genes</header>
         </headers>
         <fields>
-            <field>UPID</field>
-			<field>DOWNID</field>
+            <field op="=">UPID</field>
+			<field op="=">DOWNID</field>
         </fields>
         <data_struct indicator="div" identifier="align" identification_string="center" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=' '>\n>LOC_.*\n|\n|\r|\t|\xa0</prettify>
@@ -46,15 +46,15 @@
             <header type="">Oryzabase Gene Name Synonym(s)</header>
         </headers>
         <fields>
-            <field>keyword</field>
+            <field op="=">keyword</field>
         </fields>
         <data_struct indicator="table" identifier="id" identification_string="result_table" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="gramene" type="text/JSON" method="GET">
-        <link stern="http://data.gramene.org/v53/genes?" aft=""/>
+        <link stern="http://data.gramene.org/v56/genes?" aft=""/>
         <fields>
-            <field>q</field>
+            <field op="=">q</field>
         </fields>
     </database>
     <database dbname="ic4r" type="text/html" method="GET">
@@ -69,7 +69,7 @@
             <header type="">Expression value</header>
         </headers>
         <fields>
-            <field>term</field>
+            <field op="=">term</field>
         </fields>
         <data_struct indicator="table" identifier="id" identification_string="dataTable" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
@@ -82,7 +82,7 @@
             <header type="">Family</header>
         </headers>
         <fields>
-            <field>seq_id</field>
+            <field op="=">seq_id</field>
         </fields>
         <data_struct indicator="div" identifier="id" identification_string="subcontent" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
@@ -130,9 +130,9 @@
         <link stern="http://snp-seek.irri.org/ws/genomics/gene/osnippo/" aft=""/>
         <fields>
             <field></field>
-            <field>start</field>
-            <field>end</field>
-            <field>model</field>
+            <field op="=">start</field>
+            <field op="=">end</field>
+            <field op="=">model</field>
         </fields>
         <data_struct indicator="div" identifier="id" identification_string="subcontent" line_separator="tr" cell_separator="td"/>
     </database>
@@ -144,12 +144,50 @@
             <header type="">Protein</header>
         </headers>
         <fields>
-            <field>orf</field>
+            <field op="=">orf</field>
         </fields>
         <data_struct indicator="div" identifier="class" identification_string="content" line_separator="div" cell_separator="pre"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="planttfdb" type="text/csv" method="downloadable">
         <link stern="http://planttfdb.cbi.pku.edu.cn/download.php" aft=""/>
+    </database>
+    <database dbname="uniprot_getid" type="text/html" method="GET">
+        <link stern="http://www.uniprot.org/uniprot/?query=" aft=""/>
+        <headers>
+            <header type=""></header>
+            <header type="">Entry</header>
+            <header type="">Entry name</header>
+            <header type=""></header>
+            <header type="">Protein names</header>
+            <header type="">Gene names</header>
+            <header type="">Organism</header>
+            <header type="">Length</header>
+            <header type=""></header>
+        </headers>
+        <fields>
+            <field lowercase="true" op=":">gene</field>
+        </fields>
+        <data_struct indicator="tbody" identifier="" identification_string="" line_separator="tr" cell_separator="td"/>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
+    </database>
+    <database dbname="uniprot_getprotein" type="text/html" method="GET">
+        <link stern="http://www.uniprot.org/uniprot/" aft=""/>
+        <headers>
+            <header type=""></header>
+            <header type="">Entry</header>
+            <header type="">Entry name</header>
+            <header type=""></header>
+            <header type="">Protein names</header>
+            <header type="">Gene names</header>
+            <header type="">Organism</header>
+            <header type="">Length</header>
+            <header type=""></header>
+        </headers>
+        <fields>
+            <field lowercase="true" op=":"></field>
+        </fields>
+        <data_struct indicator="tbody" identifier="" identification_string="" line_separator="tr" cell_separator="td"/>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
 </databases>
