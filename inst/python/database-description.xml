@@ -174,15 +174,7 @@
     <database dbname="uniprot_getprotein" type="text/html" method="GET">
         <link stern="http://www.uniprot.org/uniprot/" aft=""/>
         <headers>
-            <header type=""></header>
-            <header type="">Entry</header>
-            <header type="">Entry name</header>
-            <header type=""></header>
-            <header type="">Protein names</header>
-            <header type="">Gene names</header>
-            <header type="">Organism</header>
-            <header type="">Length</header>
-            <header type=""></header>
+            <header></header>
         </headers>
         <fields>
             <field lowercase="true" op=":"></field>

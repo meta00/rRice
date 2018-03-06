@@ -91,7 +91,7 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
                 i += 1
             f = 0
             for field in fields:
-                if (dict[field] == qfields[f]) & (qfields[f] != ""):
+                if (dict[field.text] == qfields[f]) & (qfields[f] != ""):
                     result.append(dict)
                 f += 1
     
