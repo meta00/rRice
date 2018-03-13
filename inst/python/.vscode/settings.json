@@ -1,5 +1,0 @@
-{
-    "python.linting.pylintEnabled": false,
-    "terminal.integrated.shell.windows": "C:\\Windows\\system32\\cmd.exe ",
-    "python.pythonPath": "C:\\Users\\XPS 15-9550\\Envs\\rrice\\Scripts\\python.exe"
-}
