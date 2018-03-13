@@ -1,0 +1,5 @@
+Notes/
+.vscode/
+__pycache__/
+.gitignore
+test_query/

@@ -2,7 +2,6 @@
 
 import importlib
 import pip
-import pandas
 
 def install(package):
     pip.main(['install', package])
@@ -20,6 +19,8 @@ def test():
         install("gzip")
     if (importlib.find_loader('lxml') is None) :
         install("lxml")
+    if (importlib.find_loader('click') is None) :
+        install("click")
         
 def main():
     print("test")

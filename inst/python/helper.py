@@ -1,6 +1,13 @@
+"""Helper module
+Handle supportive function such as connection handling, path checking and error handling
+"""
+
 import os
 import requests
 import sys
+import re
+import pandas as pd
+from bs4 import BeautifulSoup
 
 def existFile(pathToFile):
     """
@@ -43,79 +50,7 @@ def loadFileURL(nameFile, url):
         print("File created")
         f.close()
 
-
-def connectionError(link):
-    """
-    Test website issues and returns requests.get(link) result
-
-    :param link: URL
-    :return: requests.get(link)
-    """
-    try:
-        html_page = requests.get(link, allow_redirects=False)
-
-        if (html_page.status_code == 302 or html_page.status_code == 307):
-            print("Website maintenance")
-            sys.exit(1)
-
-        elif (html_page.status_code == 400):
-            print("Bad request")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 403):
-            print("Forbidden")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 404):
-            print("Not found")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 429):
-            print("Too Many Requests")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 500):
-            print("Internal Server Error")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 503):
-            print("Service Unavailable")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 504):
-            print("Gateway Timeout")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 505):
-            print("HTTP Version Not Supported")
-            sys.exit(1)
-
-
-        elif (html_page.status_code > 299):
-            print("Unknow internet error")
-            sys.exit(1)
-
-        else:
-            return html_page
-
-    except requests.exceptions.RequestException:
-        print("Unknow internet error")
-        sys.exit(1)
-
-    except requests.exceptions.Timeout:
-        print("Timeout")
-        sys.exit(1)
-
-
-
-def connectionErrorPost(link, data):
+def connectionError(link, data=""):
 
     """
     Return requests.get(link) with post request and test website issues
@@ -126,64 +61,15 @@ def connectionErrorPost(link, data):
     """
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0'}
-        html_page = requests.post(link, data=data, headers=headers)
-
-
-        if (html_page.status_code == 302 or html_page.status_code == 307):
-            print("Website maintenance")
-            sys.exit(1)
-
-        elif (html_page.status_code == 400):
-            print("Bad request")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 403):
-            print("Forbidden")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 404):
-            print("Not found")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 429):
-            print("Too Many Requests")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 500):
-            print("Internal Server Error")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 503):
-            print("Service Unavailable")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 504):
-            print("Gateway Timeout")
-            sys.exit(1)
-
-
-        elif (html_page.status_code == 505):
-            print("HTTP Version Not Supported")
-            sys.exit(1)
-
-
-        elif (html_page.status_code > 299):
-            print("Unknow internet error")
-            sys.exit(1)
-
+        if data!= "":
+            res = requests.post(link, data=data, headers=headers)
         else:
-            return html_page
+            res = requests.get(link, allow_redirects=False)
+        if res.status_code != 200:
+            raise Exception('Server Error: ' + str(res.status_code))
+            # sys.exit(1)
+        return res
 
     except requests.exceptions.RequestException:
-        print("Unknow internet error")
-        sys.exit(1)
-
-    except requests.exceptions.Timeout:
-        print("Timeout")
-        sys.exit(1)
+        raise Exception("Internet Connection error")
+        # sys.exit(1)

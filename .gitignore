@@ -1,4 +1,0 @@
-inst/doc
-inst/python/__pycache__/*
-.gitignore
-.Rhistory
