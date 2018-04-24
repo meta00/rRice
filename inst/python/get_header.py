@@ -12,7 +12,7 @@ def get_header(db, test_id):
         if database["method"]=="POST":
             link = database.findAll("link")[0]["stern"]
             data = {'rapId': test_id}
-            res = helper.connectionErrorPost(link, data)
+            res = helper.connectionError(link, data)
         elif database["method"]=="GET":
             link = database.findAll("link")[0]["stern"] + test_id + database.findAll("link")[0]["aft"]
             res = helper.connectionError(link)

@@ -98,6 +98,7 @@ query.query("oryzabase", ["Os03g0149100"])
 * funricegene
 * MSU
 * RiceNetDb
+* Uniprot - Get protein ID
 
 ## List of supported format
 

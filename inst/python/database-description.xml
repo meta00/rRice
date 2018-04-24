@@ -51,7 +51,7 @@
         <data_struct indicator="table" identifier="id" identification_string="result_table" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
-    <database dbname="gramene" type="text/JSON" method="GET">
+    <database dbname="gramene" type="text/JSON" method="GET" normalize="false">
         <link stern="http://data.gramene.org/v56/genes?" aft=""/>
         <fields>
             <field op="=">q</field>
@@ -126,7 +126,7 @@
             <field>MSU</field>
         </fields>
     </database>
-    <database dbname="snpseek" type="text/JSON" method="GET">
+    <database dbname="snpseek" type="text/JSON" method="GET" normalize="false">
         <link stern="http://snp-seek.irri.org/ws/genomics/gene/osnippo/" aft=""/>
         <fields>
             <field></field>
@@ -172,14 +172,34 @@
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
     <database dbname="uniprot_getprotein" type="text/html" method="GET">
-        <link stern="http://www.uniprot.org/uniprot/" aft=""/>
+        <link stern="http://www.uniprot.org/uniprot/" aft=".rdf"/>
         <headers>
             <header></header>
         </headers>
         <fields>
-            <field lowercase="true" op=":"></field>
+            <field lowercase="true" op=""></field>
         </fields>
         <data_struct indicator="tbody" identifier="" identification_string="" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
     </database>
+    <database dbname="kegg" type="text/html" method="GET">
+        <link stern="http://rest.kegg.jp/" aft=""/>
+        <headers>
+            <header>Definition</header>
+        </headers>
+        <fields>
+            <field lowercase="true" op="/">get</field>
+        </fields>
+        <data_struct indicator="html" identifier="" line_separator="body" cell_separator="p"/>
+        <prettify replaceBy=''>((^(?!DEFINITION.*).*)&(^(?!DESCRIPTION.*).*))|\n|(DEFINITION *)|(DESCRIPTION *)</prettify>
+    </database>
+    <database dbname="eggnog_og" type="text/JSON" method="GET" normalize="true">
+        <link stern="http://eggnogapi.embl.de/nog_data/json/" aft=""/>
+        <headers>
+            <header>go_header</header>
+        </headers>
+        <fields>
+            <field lowercase="true" op="/">go_terms</field>
+        </fields>
+    </database>  
 </databases>

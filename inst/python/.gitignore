@@ -3,3 +3,4 @@ Notes/
 __pycache__/
 .gitignore
 test_query/
+data/

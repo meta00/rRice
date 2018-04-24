@@ -1,36 +1,43 @@
 import helper
 from bs4 import BeautifulSoup
 import json
-import re
+import regex
 import pandas as pd
 import csv
 
-def query(db, qfields=[], outputFormat="dict", outputFile=None):
-
-    # database descriptor querry
-    database_descriptor = BeautifulSoup(open(
+def fetch_description(db):
+    # Fetch database description
+    database_description = BeautifulSoup(open(
         "database-description.xml").read(), "xml").findAll("database", dbname=db.lower())
-    if not database_descriptor:
+    if not database_description:
         raise ValueError('Database Not Found')
+    return database_description
+
+def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
+    
+    # Fetch database description
+    database_description = fetch_description(db)
 
     # Prepare URL
-    link = database_descriptor[0].findAll("link")[0]["stern"]
+    link = database_description[0].findAll("link")[0]["stern"]
     # Get Headers list
     headers = []
-    for header in database_descriptor[0].findAll("header"):
+    for header in database_description[0].findAll("header"):
         headers.append(header.text)
+        
     # Get query qfields list
-    fields = database_descriptor[0].findAll("field")
+    fields = database_description[0].findAll("field")
 
-    if database_descriptor[0]["method"] == "POST":
+    # Compile URL
+    if database_description[0]["method"] == "POST":
         i = 0
         for field in fields:
             data = {field.text: qfields[i]}
             i += 1
         res = helper.connectionError(link, data)
-    elif database_descriptor[0]["method"] == "GET":
+    elif database_description[0]["method"] == "GET":
         query_string = ""
-        if database_descriptor[0]["type"] != "text/csv":
+        if database_description[0]["type"] != "text/csv":
             i = 0
             for field in fields:
                 # Detect controller field (always first field)
@@ -44,44 +51,53 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
                 i += 1
             query_string = query_string[:-1]
             link += query_string + \
-                database_descriptor[0].findAll("link")[0]["aft"]
-            print(link)
+                database_description[0].findAll("link")[0]["aft"]
+            if verbose: print(link)
         res = helper.connectionError(link)
 
+    if verbose:
+        print(res.content)
+    
     # Handle HTML based query
-    if(database_descriptor[0]["type"] == "text/html"):
+    if(database_description[0]["type"] == "text/html"):
         # Handling Connection
         ret = BeautifulSoup(res.content, "lxml")
-
-        data = ret.findAll(database_descriptor[0].findAll("data_struct")[0]["indicator"],
-                           {database_descriptor[0].findAll("data_struct")[0]["identifier"]:
-                            database_descriptor[0].findAll("data_struct")[0]["identification_string"]})
+        if verbose: 
+            print("return value:", ret)
+            print(database_description[0].findAll("data_struct")[0]["identifier"])
+        if database_description[0].findAll("data_struct")[0]["identifier"] != "": 
+            data = ret.findAll(database_description[0].findAll("data_struct")[0]["indicator"],
+                        {database_description[0].findAll("data_struct")[0]["identifier"]:
+                        database_description[0].findAll("data_struct")[0]["identification_string"]})
+        else: data = ret.findAll(database_description[0].findAll("data_struct")[0]["indicator"])
         result = []
         if data != []:
-            regex = re.compile(database_descriptor[0].findAll(
-                "prettify")[0].text, re.IGNORECASE)
-            replaceBy = database_descriptor[0].findAll(
+            reg = regex.compile(database_description[0].findAll(
+                "prettify")[0].text, regex.MULTILINE)
+            replaceBy = database_description[0].findAll(
                 "prettify")[0]['replaceBy']
-            for dataLine in data[0].findAll(database_descriptor[0].findAll("data_struct")[0]["line_separator"]):
+            for dataLine in data[0].findAll(database_description[0].findAll("data_struct")[0]["line_separator"]):
                 dict = {}
                 i = 0
-                for dataCell in dataLine.findAll(database_descriptor[0].findAll("data_struct")[0]["cell_separator"]):
-                    dataFormat = regex.sub(replaceBy, dataCell.text)
-                    dict[headers[i]] = dataFormat
+                for dataCell in dataLine.findAll(database_description[0].findAll("data_struct")[0]["cell_separator"]):
+                    dataFormat = reg.sub(replaceBy, dataCell.text)
+                    if(i<headers.__len__()):
+                        dict[headers[i]] = dataFormat
                     i += 1
                 if dict == {}:
                     continue
                 dict.pop("", None)
+                if verbose: print(dict)
                 result.append(dict)
-
     # Handle JSON based query
-    elif(database_descriptor[0]["type"] == "text/JSON"):
+    elif(database_description[0]["type"] == "text/JSON"):
         # Return as a List of Dictionary
         result = json.loads(res.content.decode("UTF-8"))
+        if verbose: print (result)
     # Handle csv based DB
-    if(database_descriptor[0]["type"] == "text/csv"):
-        ret = csv.reader(res.content.decode(database_descriptor[0]["encoding"]).splitlines(
-        ), delimiter=list(database_descriptor[0]["deli"])[0], quoting=csv.QUOTE_NONE)
+    if(database_description[0]["type"] == "text/csv"):
+        ret = csv.reader(res.content.decode(database_description[0]["encoding"]).splitlines(
+        ), delimiter=list(database_description[0]["deli"])[0], quoting=csv.QUOTE_NONE)
         result = []
         for row in ret:
             i = 0
@@ -96,7 +112,7 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
                 f += 1
     
     # Handle different Output format
-    df = pd.DataFrame(result)
+    df = pd.DataFrame(pd.io.json.json_normalize(result))
     if(outputFormat == "dict"):
         return result
     elif(outputFormat == "pandas"):
@@ -107,12 +123,12 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None):
         return df.to_json(outputFile)
     elif(outputFile == None):
         print("Please specify a destination")
-        return
+        return []
     if(outputFormat == "csv"):
         df.to_csv(outputFile)
         print("Query exported to ", outputFile)
-        return
+        return []
     if(outputFormat == "excel"):
         df.to_excel(outputFile)
         print("Query exported to ", outputFile)
-        return
+        return []
