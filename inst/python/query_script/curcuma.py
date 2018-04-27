@@ -10,8 +10,8 @@ sys.path.append('..')
 import query
 
 # Configuration:
-data_set = ['Control-1-NT_25628_clustered_genes_annotations.tab', 'Curcuma-longa-N0-L_25630_clustered_genes_annotations.tab','Curcuma-longa-N350-H_25629_clustered_genes_annotations.tab']
-# data_set = ['Control-1-NT_25628_clustered_genes_annotations.1.tab']
+# data_set = ['Control-1-NT_25628_clustered_genes_annotations.tab', 'Curcuma-longa-N0-L_25630_clustered_genes_annotations.tab','Curcuma-longa-N350-H_25629_clustered_genes_annotations.tab']
+data_set = ['Control-1-NT_25628_clustered_genes_annotations.1.tab']
 db_file_path = 'data\\eggnog.db\\eggnog.db'
 pool = ThreadPool(4)
 
@@ -42,6 +42,17 @@ pool = ThreadPool(4)
 #     if iteration == total: 
 #         print()
 
+def get_multiple_id(db, ids, field):
+    ret = []
+    for key in ids:
+        if key == "" : return
+        try:
+            ret.append(query.query(db, [key])[0][field])
+        except:
+            print(key)
+            continuehu
+    return ret
+
 def get_row(row):
 
     conn = sqlite3.connect(db_file_path)
@@ -57,38 +68,13 @@ def get_row(row):
         else: 
             row['eggNOG_description'] = None
     
-    ko_definition = []
     row['KEGG_ko'] = row['KEGG_ko'].split('|')
-    for ko in row['KEGG_ko']:
-            if ko == "" : break
-            try:
-                ko_definition.append(query.query('kegg', [ko])[0]['Definition'])
-            except:
-                    print("\n",ko)
-                    continue
-    row['kegg_ko_definition'] = ko_definition
-
-    mo_definition = []
     row['KEGG_module'] = row['KEGG_module'].split('|')
-    for mo in row['KEGG_module']:
-            if mo == "" : break
-            try:
-                mo_definition.append(query.query('kegg', [mo])[0]['Definition'])
-            except:
-                    print("\n",mo)
-                    continue
-    row['kegg_module_definition'] = mo_definition
-
-    pathway_description = []
     row['KEGG_pathway'] = row['KEGG_pathway'].split('|')
-    for pathway in row['KEGG_pathway']:
-            if pathway == "" : break
-            try:
-                pathway_description.append(query.query('kegg', [pathway])[0]['Definition'])
-            except:
-                    print("\n",pathway)
-                    continue
-    row['KEGG_pathway_description'] = pathway_description
+    
+    row['kegg_ko_definition'] = get_multiple_id('kegg', row['KEGG_ko'], 'Definition')
+    row['kegg_module_definition'] = get_multiple_id('kegg', row['KEGG_module'], 'Definition')
+    row['KEGG_pathway_description'] = get_multiple_id('kegg', row['KEGG_pathway'], 'Definition')
 
 def curcuma(set):
     print("Processing file", set,"\n")
@@ -100,13 +86,17 @@ def curcuma(set):
             list.append(each)
     start = time.time()
     pool.map(get_row, list)
+    # for each in list:
+    #     get_row(each)
     print("Total time:", time.time() - start)
-    pool.close() 
-    pool.join() 
+    # pool.close() 
+    # pool.join() 
     
     output_file_path = 'data/curcuma/output/' + set
     with open(output_file_path, 'w+') as tabfile:
-        headers = ['#gene','eggNOG_OG','eggNOG_description','kegg_ko_definition','kegg_module_definition','KEGG_pathway_description']
+        # headers = ['#gene','eggNOG_OG','eggNOG_description','kegg_ko_definition','kegg_module_definition','KEGG_pathway_description']
+        
+        headers = ['#gene','eggNOG_OG','eggNOG_description','kegg_ko_definition','kegg_module_definition']
         dictWriter = csv.DictWriter(tabfile, delimiter = '\t', fieldnames = headers)
         dictWriter.writeheader()
         for each in list:
@@ -114,4 +104,5 @@ def curcuma(set):
     
     print("\n")
 
-pool.map(curcuma, data_set)
+for set in data_set:
+    curcuma(set)
