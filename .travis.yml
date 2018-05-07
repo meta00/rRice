@@ -45,5 +45,3 @@ before_install:
   - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then sudo pip3 install requests; fi
   - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then sudo pip3 install bs4; fi
   - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then sudo pip3 install lxml; fi
-
-    

@@ -50,15 +50,14 @@ def get_multiple_id(db, ids, field):
             ret.append(query.query(db, [key])[0][field])
         except:
             print(key)
-            continuehu
+            continue
     return ret
 
 def get_row(row):
-
     conn = sqlite3.connect(db_file_path)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-
+    
     if row['eggNOG_OG'] != '':
         t = (row["eggNOG_OG"],)
         c.execute("select description from og where og=?",t) 

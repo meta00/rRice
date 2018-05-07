@@ -4,6 +4,7 @@ import json
 import regex
 import pandas as pd
 import csv
+import requests
 
 def fetch_description(db):
     # Fetch database description
@@ -29,31 +30,34 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
     fields = database_description[0].findAll("field")
 
     # Compile URL
-    if database_description[0]["method"] == "POST":
-        i = 0
-        for field in fields:
-            data = {field.text: qfields[i]}
-            i += 1
-        res = helper.connectionError(link, data)
-    elif database_description[0]["method"] == "GET":
-        query_string = ""
-        if database_description[0]["type"] != "text/csv":
+    if link[:4]=='http':
+        if database_description[0]["method"] == "POST":
             i = 0
             for field in fields:
-                # Detect controller field (always first field)
-                if "lowercase" in field:
-                    print(qfields[i].lower())
-                if field.text == "":
-                    query_string += qfields[i] + "?"
-                # All other fields are query fields
-                else:
-                    query_string += field.text + field["op"] + qfields[i] + "&"
+                data = {field.text: qfields[i]}
                 i += 1
-            query_string = query_string[:-1]
-            link += query_string + \
-                database_description[0].findAll("link")[0]["aft"]
-            if verbose: print(link)
-        res = helper.connectionError(link)
+            res = helper.connectionError(link, data)
+        elif database_description[0]["method"] == "GET":
+            query_string = ""
+            if database_description[0]["type"] != "text/csv":
+                i = 0
+                for field in fields:
+                    # Detect controller field (always first field)
+                    if "lowercase" in field:
+                        print(qfields[i].lower())
+                    if field.text == "":
+                        query_string += qfields[i] + "?"
+                    # All other fields are query fields
+                    else:
+                        query_string += field.text + field["op"] + qfields[i] + "&"
+                    i += 1
+                query_string = query_string[:-1]
+                link += query_string + \
+                    database_description[0].findAll("link")[0]["aft"]
+                if verbose: print(link)
+            res = helper.connectionError(link)
+    else:
+        res = open(link)
 
     if verbose:
         print(res.content)
@@ -96,8 +100,10 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
         if verbose: print (result)
     # Handle csv based DB
     if(database_description[0]["type"] == "text/csv"):
-        ret = csv.reader(res.content.decode(database_description[0]["encoding"]).splitlines(
-        ), delimiter=list(database_description[0]["deli"])[0], quoting=csv.QUOTE_NONE)
+        if type(res) is requests.models.Response:
+            ret = csv.reader(res.content.decode(database_description[0]["encoding"]).splitlines(), delimiter=list(database_description[0]["deli"])[0], quoting=csv.QUOTE_NONE)
+        else:
+            ret = csv.reader(res, delimiter=list(database_description[0]["deli"])[0], quoting=csv.QUOTE_NONE)
         result = []
         for row in ret:
             i = 0
@@ -107,9 +113,12 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
                 i += 1
             f = 0
             for field in fields:
-                if (dict[field.text] == qfields[f]) & (qfields[f] != ""):
-                    result.append(dict)
+                match = True
+                if (dict[field.text] != qfields[f]) & (qfields[f] != ""):
+                    match = False
+                    break
                 f += 1
+            if match: result.append(dict)
     
     # Handle different Output format
     df = pd.DataFrame(pd.io.json.json_normalize(result))
