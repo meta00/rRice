@@ -147,7 +147,7 @@
             <field op="=">orf</field>
         </fields>
         <data_struct indicator="div" identifier="class" identification_string="content" line_separator="div" cell_separator="pre"/>
-        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
+        <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t|\*</prettify>
     </database>
     <database dbname="planttfdb" type="text/csv" method="downloadable">
         <link stern="http://planttfdb.cbi.pku.edu.cn/download.php" aft=""/>

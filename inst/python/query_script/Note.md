@@ -33,3 +33,7 @@ The short test prove that major improvement by using thread pooling to wrap the 
 - Might be difficult to implement for general case - see curcuma.py for example
 - If leave it to biologist to implement on their own it could also be difficult
 - Server register the queries as DDOS - Solve by reduce pool size - trade off for speed
+
+## Potential name for Python package
+
+- Hypsiscopus plumbea

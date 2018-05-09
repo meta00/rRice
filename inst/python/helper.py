@@ -5,9 +5,34 @@ Handle supportive function such as connection handling, path checking and error 
 import os
 import requests
 import sys
-import re
-import pandas as pd
+import time
 from bs4 import BeautifulSoup
+
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', elasped_time = None):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    if elasped_time != None:
+        now = time.time() - elasped_time
+        now_str = "Elasped time: %02d:%02d:%02d" % (now // 3600, (now % 3600 // 60), (now % 60 // 1))
+        print('\r%s |%s| %s%% %s, %s' % (prefix, bar, percent, suffix, now_str), end = '\r')
+    else:
+        now_str = ""
+        print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 def existFile(pathToFile):
     """
@@ -73,3 +98,19 @@ def connectionError(link, data=""):
     except requests.exceptions.RequestException:
         raise Exception("Internet Connection error")
         # sys.exit(1)
+
+def downloadFile(url):
+    local_filename = 'data/' + url.split('/')[-1]
+    r = requests.get(url, stream=True)
+    total = r.headers['content-length']
+    print(total)
+    progress = 0
+    f = open(local_filename, 'wb')
+    for chunk in r.iter_content(chunk_size = 1024):
+        progress+=len(chunk)
+        print(progress/int(total)*100)
+        # printProgressBar(progress, total, prefix='Downloading', suffix='', decimals=2) 
+        if chunk: # filter out keep-alive new chunks
+            f.write(chunk)
+    f.close()
+    return 

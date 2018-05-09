@@ -99,6 +99,8 @@ query.query("oryzabase", ["Os03g0149100"])
 * MSU
 * RiceNetDb
 * Uniprot - Get protein ID
+* pfam - offline
+* Kegg
 
 ## List of supported format
 

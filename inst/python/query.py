@@ -14,32 +14,23 @@ def fetch_description(db):
         raise ValueError('Database Not Found')
     return database_description
 
-def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
-    
-    # Fetch database description
-    database_description = fetch_description(db)
-
-    # Prepare URL
-    link = database_description[0].findAll("link")[0]["stern"]
-    # Get Headers list
-    headers = []
-    for header in database_description[0].findAll("header"):
-        headers.append(header.text)
-        
+# Compose and execute query to database
+def execute_query(db, qfields=[], verbose=False):
     # Get query qfields list
-    fields = database_description[0].findAll("field")
-
+    fields = db[0].findAll("field")
+    # Prepare URL
+    link = db[0].findAll("link")[0]["stern"]
     # Compile URL
     if link[:4]=='http':
-        if database_description[0]["method"] == "POST":
+        if db[0]["method"] == "POST":
             i = 0
             for field in fields:
                 data = {field.text: qfields[i]}
                 i += 1
-            res = helper.connectionError(link, data)
-        elif database_description[0]["method"] == "GET":
+            return helper.connectionError(link, data)
+        elif db[0]["method"] == "GET":
             query_string = ""
-            if database_description[0]["type"] != "text/csv":
+            if db[0]["type"] != "text/csv":
                 i = 0
                 for field in fields:
                     # Detect controller field (always first field)
@@ -53,12 +44,23 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
                     i += 1
                 query_string = query_string[:-1]
                 link += query_string + \
-                    database_description[0].findAll("link")[0]["aft"]
+                    db[0].findAll("link")[0]["aft"]
                 if verbose: print(link)
-            res = helper.connectionError(link)
+            return helper.connectionError(link)
     else:
-        res = open(link)
+        return open(link)
 
+def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
+    
+    # Fetch database description
+    database_description = fetch_description(db)
+
+    # Get Headers list
+    headers = []
+    for header in database_description[0].findAll("header"):
+        headers.append(header.text)
+
+    res = execute_query(database_description, qfields, verbose)
     if verbose:
         print(res.content)
     
@@ -98,7 +100,10 @@ def query(db, qfields=[], outputFormat="dict", outputFile=None, verbose=False):
         # Return as a List of Dictionary
         result = json.loads(res.content.decode("UTF-8"))
         if verbose: print (result)
+    
     # Handle csv based DB
+    # Auto detect and support local csv databases
+    fields = database_description[0].findAll("field")
     if(database_description[0]["type"] == "text/csv"):
         if type(res) is requests.models.Response:
             ret = csv.reader(res.content.decode(database_description[0]["encoding"]).splitlines(), delimiter=list(database_description[0]["deli"])[0], quoting=csv.QUOTE_NONE)

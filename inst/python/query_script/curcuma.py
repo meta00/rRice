@@ -11,8 +11,8 @@ import query
 
 # Configuration:
 # data_set = ['Control-1-NT_25628_clustered_genes_annotations.tab', 'Curcuma-longa-N0-L_25630_clustered_genes_annotations.tab','Curcuma-longa-N350-H_25629_clustered_genes_annotations.tab']
-data_set = ['Control-1-NT_25628_clustered_genes_annotations.1.tab']
-db_file_path = 'data\\eggnog.db\\eggnog.db'
+data_set = ['Control-1-NT_25628_clustered_genes_annotations.tab']
+db_file_path = '..\\data\\eggnog.db\\eggnog.db'
 pool = ThreadPool(4)
 
 # Print iterations progress
@@ -78,7 +78,7 @@ def get_row(row):
 def curcuma(set):
     print("Processing file", set,"\n")
     list = []
-    tab_file_path = 'data\\curcuma\\' + set
+    tab_file_path = '..\\data\\curcuma\\' + set
     with open(tab_file_path, newline = '') as tabfile:
         dictReader = csv.DictReader(tabfile, delimiter = '\t')
         for each in dictReader:
@@ -91,7 +91,7 @@ def curcuma(set):
     # pool.close() 
     # pool.join() 
     
-    output_file_path = 'data/curcuma/output/' + set
+    output_file_path = '../data/curcuma/output/' + set
     with open(output_file_path, 'w+') as tabfile:
         # headers = ['#gene','eggNOG_OG','eggNOG_description','kegg_ko_definition','kegg_module_definition','KEGG_pathway_description']
         
