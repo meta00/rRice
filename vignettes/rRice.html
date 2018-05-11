@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="USTH" />
+
+<meta name="date" content="2018-04-26" />
+
+<title>rRice</title>
+
+
+
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">rRice</h1>
+<h4 class="author"><em>USTH</em></h4>
+<h4 class="date"><em>2018-04-26</em></h4>
+
+
+
+<div id="informations-about-the-vignette" class="section level2">
+<h2>Informations about the vignette</h2>
+<p>In this vignette, you will find how to use the <strong>rRice</strong> package and it will be illustrated by examples. To use this package, you will have to create an experiment and then you will be able to work with it : * Interrogate the databases * Add manually databases * Create an array with specific genes and properties</p>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<div id="create-an-experiment-and-add-databases" class="section level3">
+<h3>1.) Create an experiment and add databases</h3>
+<p>The first thing you will have to do to use the package is to create a new experiment with the <code>createExperiment(name, locus)</code> function :</p>
+<pre><code>locus &lt;- data.frame(ch = c(&quot;1&quot;), st = c(&quot;148907&quot;), end = c(&quot;248907&quot;))
+experiment &lt;- createExperiment(&quot;newExperiment&quot;, locus)</code></pre>
+<p>Then you will have to follow instructions : * First you will have to tell how many databases you want to experiment * Then you will have to give the date of your experiment * Finally, you will have to choose which databases to choose</p>
+<p>After succeeding these steps, you will have an operational <code>experiment</code> you will be able to use.</p>
+<p>Example :</p>
+<pre><code>&gt; locus &lt;- data.frame(ch = c(&quot;1&quot;), st = c(&quot;148907&quot;), end = c(&quot;248907&quot;))
+&gt; experiment &lt;- createExperiment(&quot;newExperiment&quot;, locus)
+How many databases do you want to experiment ? :1
+Enter the date of the experiment (mm/dd/yyyy) : 09/17/2016
+loading informations...
+The list of the databases : 
+1 for RAPDB 
+2 for Gramene 
+3 for Oryzabase 
+4 for IC4R 
+5 for Planttfdb 
+6 for PLNTFDB 
+7 for Funricigenes 
+8 for Funricigenes2 
+9 for Funricigenes3 
+10 for MSU7 
+1</code></pre>
+<p>Then wait for few seconds that your RAPDB database has been well-added to your experiment</p>
+</div>
+<div id="consult-your-experiment" class="section level3">
+<h3>2.) Consult your experiment</h3>
+<p>If you want to collect the informations about your <code>experiment</code> : * name : <code>experiment@name</code> * date : <code>experiment@date</code> * databases : <code>experiment@databases</code> will return all the databases you have add to your experiment * genes : <code>experiment@genes</code> will return the list of the genes of all the databases you interrogated * properties : <code>experiment@properties</code> will return the list of the properties you selected with <code>selectProperties(...)</code> * others : <code>experiment@others</code> will contain a list with your personal informations you added with the function <code>addAttribute(...)</code></p>
+<p>Example :</p>
+<pre><code>&gt; experiment@name
+[1] &quot;newExperiment&quot;
+&gt; experiment@databases
+[[1]]
+[1] &quot;RAPDB&quot;</code></pre>
+</div>
+<div id="add-new-databases-to-the-experiment" class="section level3">
+<h3>3.) Add new databases to the experiment</h3>
+<p>If you wish to add new databases in your variable <code>experiment</code> :</p>
+<pre><code>experiment &lt;- addDBs(experiment)</code></pre>
+<p>Then you will have to select the number of databases you want to add to your experiment and to choose which database to interrogate.</p>
+<p>Example :</p>
+<pre><code>&gt; experiment &lt;- addDBs(experiment)
+How many databases do you want to experiment ? :1
+The list of the databases : 
+1 for RAPDB 
+2 for Gramene 
+3 for Oryzabase 
+4 for IC4R 
+5 for Planttfdb 
+6 for PLNTFDB 
+7 for Funricigenes 
+8 for Funricigenes2 
+9 for Funricigenes3 
+10 for MSU7 
+2
+loading informations of the database...</code></pre>
+<p>Then wait for few seconds that your RAPDB database has been well-added behind your preexisting databases Notice that your number of databases of your experiment has been modified :</p>
+<pre><code>&gt; experiment@databases
+[[1]]
+[1] &quot;RAPDB&quot;
+
+[[2]]
+[1] &quot;Gramene&quot;</code></pre>
+</div>
+<div id="add-manually-a-new-database-to-the-experiment" class="section level3">
+<h3>4.) Add manually a new database to the experiment</h3>
+<p>If you have a personal database you would like to integrate to your variable <code>experiment</code> :</p>
+<pre><code>experiment &lt;- createNewDB(experiment)</code></pre>
+<p>Then you will have to give few informations about your new database you want to integrate in your experiment : * Name of the new database * The type if id of the first column of the file you want to import (rapdb or msu) * The separator which is used in the file to separate every datas * The path toward the file you want to import</p>
+<p>Example :</p>
+<pre><code>&gt; experiment &lt;- createNewDB(experiment)
+Your file has to be built as follow : 
+First line is composed with all the names of the attributes
+Others lines composed with all the values of the genes
+Write the name of your new db :newDB
+What kind of typeID is on the first row of your file (1 : msu; 2 : rapdb) : 2
+Which separator is used in your file ? :,
+Write the absolute path until your file :/path/towards/my/file.txt</code></pre>
+<p>Then the new database <code>newDB</code> has been well-added to your <code>experiment</code> variable and you will find all the genes you added in <code>experiment@genes</code></p>
+</div>
+<div id="others-useful-functions" class="section level3">
+<h3>5.) Others useful functions</h3>
+<div id="a.-addattribute-function" class="section level4">
+<h4>a.) addAttribute function</h4>
+<p>If you want to add personal informations for your experiment then use this functions as follows :</p>
+<pre><code>&gt; experiment &lt;- addAttribute(experiment, &quot;newAttribut&quot;, &quot;1&quot;)
+&gt; experiment@others
+[[1]]
+newAttribut 
+        &quot;1&quot; </code></pre>
+</div>
+<div id="b.-create-an-array-with-specific-genes-and-properties-selected-by-the-user" class="section level4">
+<h4>b.) Create an array with specific genes and properties selected by the user</h4>
+<p>After you added a lot of databases in your variable <code>experiment</code>, you may want to create an array with only few genes and few properties. To do so, you will have to : #### 1.) selectProperties function</p>
+<p>The goal of this function is to select only the properties of your differents databases of your experiment you want to study :</p>
+<pre><code>&gt; experiment &lt;- selectProperties(experiment, list(&quot;RAPDB.id&quot;, &quot;Gramene.geneIdx&quot;, &quot;Gene.attribut1&quot;))
+&gt; experiment@properties
+[[1]]
+[1] &quot;RAPDB.id&quot;
+
+[[2]]
+[1] &quot;Gramene.geneIdx&quot;
+
+[[3]]
+[1] &quot;Gene.attribut1&quot;
+</code></pre>
+</div>
+<div id="selectgenes-function" class="section level4">
+<h4>2.) selectGenes function</h4>
+<p>The goal of this function is to select only the genes of your databases of your experiment you want to study. The first argument of your function <code>selectGenes</code> is the <code>experiment</code>, the second is the list of genes you want to study <code>listeGenes</code> (rapdb or msu) and the last refer the type of id genes there are in <code>listeGenes</code>.</p>
+<p>Example :</p>
+<pre><code>&gt; listeGenes &lt;- list(&quot;Os01g0104600&quot;,&quot;Os01g0104400&quot;)
+&gt; experiment &lt;- selectGenes(experiment, listeGenes, &quot;RAPDB&quot;)</code></pre>
+</div>
+<div id="getproperties-function" class="section level4">
+<h4>3.) getProperties function</h4>
+<p>Thanks to 1.) and 2.) we will be able to create an array only with the genes and properties selected above. The first argument of the <code>getProperties</code> function is your variable <code>experiment</code> and the second represents which id of the gene will be present in the array (rapdb or msu).</p>
+<p>Example :</p>
+<pre><code>&gt; getProperties(experiment, &quot;RAPDB&quot;)
+                     rapdb.id gramene.geneidx gene.attribut1
+Os01g0104400 OsNippo01g013050              72             12
+Os01g0104600 OsNippo01g013200              75             14</code></pre>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

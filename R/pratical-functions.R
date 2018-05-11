@@ -16,7 +16,7 @@ existsGene <- function(genes, id){
     return(found)
 }
 
-#'Function to know the OS using the package
+#' Function to know the OS using the package
 #'
 #' this function allows us to know if the user is using Linux or Windows
 #' 
@@ -44,72 +44,77 @@ whichOS <- function(){
 alreadyUsedDB <- function(databases,i){
     j <- 1
     alreadyUsed <- FALSE
-    while(j < i && !alreadyUsed){
-        if (databases[[j]] == databases[[i]]){
+    while (j < i && !alreadyUsed) {
+        if (databases[[j]] == databases[[i]]) {
             alreadyUsed <- TRUE
         }
         else{
-            j <- j+1
+            j <- j + 1
         }
     }
     return(alreadyUsed)
 }
 
-#' Function which returns only the right errors
+#' Function which shows errors in DB calls
 #'
-#' This function will return all the errors like "Bad request",...
+#' This function shows known errors that may appear in a DB call, 
 #' 
 #' @param outPut character
-#' @return return only errors we know
-#' @rdname returnError-function
-returnError <- function (outPut) {
-    if(outPut == "Website maintenance"){
-        print(outPut)
+#' @return Boolean TRUE if the DB call return an error, FALSE if not
+#' @rdname showError-function
+showError <- function (outPut) {
+
+    error <- FALSE
+    if ( grepl("Website maintenance", outPut) ||
+         grepl("Bad request", outPut) ||
+         grepl("Forbidden", outPut) ||
+         grepl("Not found", outPut) ||
+         grepl("Too Many Requests", outPut) ||
+         grepl("Internal Server Error", outPut) ||
+         grepl("Gateway Timeout", outPut) ||
+         grepl("Service Unavailable", outPut) ||
+         grepl("HTTP Version Not Supported", outPut) ||
+         grepl("Unknow internet error", outPut) ||
+         grepl("Exception", outPut))
+    {
+         message(outPut)
+         error <- TRUE
     }
-        
-    if (outPut == "Bad request")
-        print(outPut)
-    if (outPut == "Forbidden")
-        print(outPut)
-    if (outPut == "Not found")
-        print(outPut)
-    if (outPut == "Too Many Requests")
-        print(outPut)
-    if (outPut == "Internal Server Error")
-        print(outPut)
-    if (outPut == "Service Unavailable")
-        print(outPut)
-    if (outPut == "Gateway Timeout")
-        print(outPut)
-    if (outPut == "HTTP Version Not Supported")
-        print(outPut)
-    if (outPut == "Unknow internet error")
-        print(outPut)
-    #else if (outPut == "on telecharege")
-    #    print(outPut)
-        
+    return (error)
 }
 
-#'Function for a JSON return
+#' Function for parsing a JSON format to Data Frame
 #'
-#' this function will only return an JSON return which start with "\{"
-#' It will allow us to treat the exception error from python 
-#' 
+#' This function will detect in an output the JSON line and return it in Data Frame format
+#'
 #' @param outPut character
-#' @return return only string which starts with "\{" -> JSON 
-#' @rdname getOutPutJSON-function
-getOutPutJSON <- function (outPut) {
-    if (identical(substr(outPut,0,1),'{')) {
-        return(outPut)
+#' @return return in data.frame() format a JSON output
+#' @rdname jsonToDataframe-function
+jsonToDataframe <- function (outPut) {
+
+    #Detection from which line to which line JSON content is stocked
+    for (i in seq(1, length(outPut))){
+        if(identical( substr(outPut[i], 1, 2), "[{")) { startLine <- i }
+        if(identical( substr(outPut[i], nchar(outPut[i])-1, nchar(outPut[i])), "}]")) { endLine <-i }
     }
-    else if (substr(outPut, nchar(outPut), nchar(outPut)) == "}"){
-        return(outPut)
+
+    result <- outPut[startLine]
+
+    #Concatenate the JSON lines
+    for (i in seq(startLine+1, endLine)) {
+        result <- paste(result, outPut[i], sep='')
     }
+    
+    #Prepare result as a good JSON format
+    result <- gsub('\'', '"', result)
+    result <- gsub('None', '"NULL"', result)
+
+    return ( fromJSON(result) )
 }
 
 #' Function for see the list of the attributes of the class
 #'
-#' this function will print the attributes of the class
+#' This function will print the attributes of the class
 #' 
 #' @param class the name of the class you want
 #' @return print the attributes of the class
