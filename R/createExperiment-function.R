@@ -12,82 +12,73 @@
 #' @export
 #' @rdname createExperiment-function
 #' @examples 
-#' locusListExample <- data.frame(ch = c("0"),st = c("0"),end = c("0"))
+#' locusListExample <- data.frame(ch = c("1"),st = c("148907"),end = c("248907"))
+#'
+#' Exemple file provided in the package :
+#' locusList <- read.table(file = "locusList.txt", col.names = c("ch","start","end")) 
 #' 
-#' createExperiment("example",locusListExample)
+#' createExperiment("example",locusList)
+
 createExperiment <- function(name, locus){
-    if(locus[[1]][[1]]==0){
-        result <- new("Experiment",
-                      name="test",
-                      date=Sys.Date(),
-                      databases=list(1),
-                      genes=list(new("RAPDB")),
-                      others=list())
-        return(result)
-    }else{
-        ## the number of databases available. To increment every time we have
-        ## one more database available
-        dbAvailables <- databasesAvailables()
-        ## to check if the number the user will put is correct or not
-        correctNbdb <- FALSE
-        while(!correctNbdb){
-            nbdb <- as.numeric(
-                readline(
-                    prompt="How many databases do you want to experiment ? :"))
-            if(is.numeric(nbdb) && nbdb > 0 && nbdb <= dbAvailables){
-                databases <- vector(mode='list', length=nbdb)
-                correctNbdb <- TRUE
+
+    ## User choice of databases
+    databasesList()
+    correctInput <- FALSE
+    while (!correctInput) {
+        correctInput <- TRUE
+        input <- readline( prompt= "Please choose databases you want to add to your experiment ( i.e.  2/3/7 ) : ")
+        if ( grepl('/', input) ) { 
+            choosenDBs <- unlist(strsplit(input, split="/"))
+            choosenDBs <- unique(choosenDBs)
+        } else {
+            choosenDBs <- unlist(input)
+        }
+        nbdb <- length(choosenDBs)
+        databases <- vector(mode='list', length=nbdb)
+        for (i in seq(1, nbdb)) {
+            if ( is.na( as.numeric(choosenDBs[i]) ) || as.numeric(choosenDBs[i]) > databasesAvailables() ) { 
+                correctInput <- FALSE
+                message("Please write it in the asked format")
+                break;
             }
-            else{
-                message("you have not choose a correct number of databases.")
-                message("please try again")
+                databases[[i]] <- changeNumberIntoDBName( as.numeric(choosenDBs[i]) )
             }
         }
-        ## Allows to check if the date is good or not
+
+        ## User choice of date
         correctDate <- FALSE
-        while(!correctDate){
-            date <- (readline(
-                prompt="Enter the date of the experiment (mm/dd/yyyy) : "))
-            date <- as.Date(c(date), format =  "%m/%d/%Y")
-            if(!is.na(date) && 
+        while (!correctDate) {
+            date <- ( readline(prompt="Enter the date of the experiment (mm/dd/yyyy) : ") )
+            date <- as.Date( c(date), format =  "%m/%d/%Y" )
+            if (!is.na(date) && 
                format(date, '%Y') > 1900 &&
-               format(date, '%Y') <= format(Sys.Date(), '%Y')){
+               format(date, '%Y') <= format(Sys.Date(), '%Y'))
+            {
                 correctDate <- TRUE
-            }
-            else{
-                message("please write the date in the format asked.")
+            } else {
+                message("Please write the date in the asked format")
             }
         }
-        message("loading informations...")
-        ## We get all the geneIds of the locuses
+
+
+        message("Reception of genes IDs ...")
+        message("It can take a moment")
+
+        ##Getting all the geneIds of the locuses
         genesIds <- callSnpSeek(locus)
-        ## We create the list which will have the genes of the databases
-        genes <- vector(mode='list', length=nbdb)
-        i <- 1
-        while(i <= nbdb){
-            ##print the choices the user can do
-            databasesList()
-            ##read the choice
-            databases[[i]] <- changeNumberIntoDBName(as.numeric(readline()))
-            if(!alreadyUsedDB(databases,i)){
-                message('loading informations of the database...')
-                callDB <- paste("callDB",
-                                changeDBNameIntoNumber(databases[i]),
-                                sep="")
-                genes[[i]] <- (do.call(callDB, args = list(genesIds, locus)))
-                i <- i+1
-            }
-            else{
-                if(alreadyUsedDB(databases,i)){
-                    message("the database is already used. Try again")
-                }
-                else{
-                    message("this number of database not exists. Try again")
-                    message("You can put a number between 1 and ", dbAvailables)
-                }
-                
-            }
+        View(genesIds) ## DEV 
+
+        ##Creating of the list which will have the genes of the databases
+        genes <- list()
+        for (i in seq(1, nbdb)) {
+               message( paste("Loading information of the database", databases[[i]], "...", sep=" "))
+               ###showError(....)               ////Ne pas la gestion des erreurs 
+               #### callDB <- paste("callDB",
+               ####                 changeDBNameIntoNumber(databases[i]),
+               ####                 sep="")
+               #### genes[[i]] <- (do.call(callDB, args = list(genesIds, locus)))                
         }
+
         result <- new("Experiment",
                       name=name,
                       date=date,
@@ -95,6 +86,5 @@ createExperiment <- function(name, locus){
                       genes=genes,
                       others=list())
         return(result)
-    }
-    
 }
+    
