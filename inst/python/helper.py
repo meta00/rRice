@@ -57,7 +57,7 @@ def formatPathToFile(nameFile):
     return pathToFile
 
 
-def loadFileURL(nameFile, url):
+def loadFileURL(url, localFilename=''):
     """
     Download the file located in the rapdb download page
 
@@ -67,13 +67,20 @@ def loadFileURL(nameFile, url):
     """
 
     # Fetch the file by the url and decompress it
-    r = requests.get(url)
-
-    # Create the file .txt
-    with open(nameFile, "wb") as f:
-        f.write(r.content)
-        print("File created")
+    r = requests.get(url, stream=True)
+    total = r.headers['content-length']
+    print(total)
+    progress = 0
+    localFilename = url.split('/')[-1] and localFilename == ""
+    with open(localFilename, 'wb') as f:
+        for chunk in r.iter_content(chunk_size = 1024):
+            progress+=len(chunk)
+            # print(progress/int(total)*100)
+            printProgressBar(progress, total, prefix='Downloading', suffix='', decimals=2) 
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
         f.close()
+    return 1
 
 def connectionError(link, data=""):
 
@@ -98,19 +105,3 @@ def connectionError(link, data=""):
     except requests.exceptions.RequestException:
         raise Exception("Internet Connection error")
         # sys.exit(1)
-
-def downloadFile(url):
-    local_filename = 'data/' + url.split('/')[-1]
-    r = requests.get(url, stream=True)
-    total = r.headers['content-length']
-    print(total)
-    progress = 0
-    f = open(local_filename, 'wb')
-    for chunk in r.iter_content(chunk_size = 1024):
-        progress+=len(chunk)
-        print(progress/int(total)*100)
-        # printProgressBar(progress, total, prefix='Downloading', suffix='', decimals=2) 
-        if chunk: # filter out keep-alive new chunks
-            f.write(chunk)
-    f.close()
-    return 

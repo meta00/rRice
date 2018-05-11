@@ -90,11 +90,12 @@ def curcuma(set):
     print("Total time:", time.time() - start)
     # pool.close() 
     # pool.join() 
-    
-    output_file_path = '../data/curcuma/output/' + set
+    return list
+
+def write_output(output_file_path, list):    
+    output_file_path = '../data/curcuma/output/' + output_file_path
     with open(output_file_path, 'w+') as tabfile:
         # headers = ['#gene','eggNOG_OG','eggNOG_description','kegg_ko_definition','kegg_module_definition','KEGG_pathway_description']
-        
         headers = ['#gene','eggNOG_OG','eggNOG_description','kegg_ko_definition','kegg_module_definition']
         dictWriter = csv.DictWriter(tabfile, delimiter = '\t', fieldnames = headers)
         dictWriter.writeheader()
