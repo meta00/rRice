@@ -32,7 +32,7 @@ listDB <- function(){
 #' databasesList()
 databasesList <- function () {
     listDB <- listDB()
-    cat("The list of the databases : \n")
+    cat("The list of the available databases : \n")
     for(i in 1:length(listDB)){
         cat(i,"for",listDB[[i]], "\n")
     }

@@ -1,45 +1,45 @@
-#' noDoubleIds
-#'
-#' This function allows to avoid the problem when the id is composed by 2 ids
-#' Example : Os01g0115500,Os01g0115566
-#'
-#' @param id character
-#' @return It will return only one id if it is not a double ID. Otherwise, it
-#' will return a list with the both ids
-#' @rdname noDoubleIds-function
-noDoubleIds <- function (id) { 
-    ##print(id[[1]]) -> id
-    ##print(id[[2]]) -> msu7Name
-    ##print(id)
-    msu7Name <- as.character(id[[2]])
-    iricname <- as.character(id[[3]])
-    id <- as.character(id[[1]])
-    
-    
-    ##for the ids like "Os01g0115500,Os01g0115566" (the double ids)
-    ##we only test the first id
-    if(grepl(',', id)) 
-    {
-        ids <- strsplit(id, ",")
-        id <- ids[[1]][[1]]
-        id1 <- ids[[1]][[2]]
-        liste <- list(id,id1)
-        return(list(list(id,msu7Name,iricname),list(id1,msu7Name,iricname)))
-    }
-    else {
-        return(list(list(id,msu7Name,iricname)))
-    }
-}
+# noDoubleIds
+#
+# This function allows to avoid the problem when the id is composed by 2 ids
+# Example : Os01g0115500,Os01g0115566
+#
+# @param id character
+# @return It will return only one id if it is not a double ID. Otherwise, it
+# will return a list with the both ids
+# @rdname noDoubleIds-function
+#noDoubleIds <- function (id) { 
+#    ##print(id[[1]]) -> id
+#    ##print(id[[2]]) -> msu7Name
+#    ##print(id)
+#    msu7Name <- as.character(id[[2]])
+#    iricname <- as.character(id[[3]])
+#    id <- as.character(id[[1]])
+#    
+#    
+#    ##for the ids like "Os01g0115500,Os01g0115566" (the double ids)
+#    ##we only test the first id
+#    if(grepl(',', id)) 
+#    {
+#        ids <- strsplit(id, ",")
+#        id <- ids[[1]][[1]]
+#        id1 <- ids[[1]][[2]]
+#        liste <- list(id,id1)
+#        return(list(list(id,msu7Name,iricname),list(id1,msu7Name,iricname)))
+#    }
+#    else {
+#        return(list(list(id,msu7Name,iricname)))
+#    }
+#}
 
-#' id
-#'
-#' This function will only return the id from the rOutput 
-#' 
-#' @param rOutput character
-#' @return this funciton will only return the id
-#' @importFrom jsonlite fromJSON
-#' @rdname id-function
-id <- function (rOutput) {
+# id
+#
+# This function will only return the id from the rOutput 
+# 
+# @param rOutput character
+# @return this funciton will only return the id
+# @importFrom jsonlite fromJSON
+# @rdname id-function
+#id <- function (rOutput) {
     #output <- getOutPutJSON(rOutput)
     #print(rOutput)
     
@@ -58,30 +58,30 @@ id <- function (rOutput) {
     #             'iricname': 'OsNippo01g015950'}
     
     ##A VOIR AVEC BAPTISTE POUR QUE JE RECOIVE UN BON JSON
-    rOutput <- gsub('\'', '"', rOutput)
-    rOutput <- gsub('None', '"None"', rOutput)
+#    rOutput <- gsub('\'', '"', rOutput)
+ #   rOutput <- gsub('None', '"None"', rOutput)
     
     #print(j['msu7Name'])
-    jsonOutput <- fromJSON(rOutput)
-    if (jsonOutput['rappredName'] == "None"){
-        id <- jsonOutput['raprepName']
-    }
-    else if (jsonOutput['rapredName'] == "None") {
-        id <- jsonOutput['rappredName']
-    }
-    else {
-        id <- jsonOutput['raprepName']
-    }
+   # jsonOutput <- fromJSON(rOutput)
+   # if (jsonOutput['rappredName'] == "None"){
+   #     id <- jsonOutput['raprepName']
+   # }
+   # else if (jsonOutput['rapredName'] == "None") {
+   #     id <- jsonOutput['rappredName']
+   # }
+   # else {
+   #     id <- jsonOutput['raprepName']
+   # }
     
-    locName <- jsonOutput['msu7Name']
-    iricname <- jsonOutput['iricname']
+   # locName <- jsonOutput['msu7Name']
+   # iricname <- jsonOutput['iricname']
     #print(iricname)
     
-    if (id != "None") {
-        return (list(id,locName,iricname))
-    }
+    #if (id != "None") {
+   #     return (list(id,locName,iricname))
+    #}
     
-}
+#}
 
 #' getIds
 #'
@@ -107,73 +107,59 @@ getIds <- function (i, locusList) {
         path <- shortPathName(path)
     }
     
-    listIds <- data.frame()
-    
-    #path2Script = paste(c(path), collapse = '')
-    
-    ch = as.character(locusList[i,1])
-    start = as.character(locusList[i,2])
-    end = as.character(locusList[i,3])
+    if (as.integer(locusList[i,1]) < 10) {
+        ch <- paste("chr0", locusList[i,1], sep = "")
+    } else {
+        ch <- paste("chr", locusList[i,1], sep = "")
+    }
+
+    start <- as.character(locusList[i,2])
+    end <- as.character(locusList[i,3])
     
     if (ch != "" && start != "" && end != "") {
         ##Call run.py from python
-        if (Sys.info()["sysname"] == "Windows"){
-            args = c(path, ch, start, end, "call_snpSeek", "None")
+        if (Sys.info()["sysname"] == "Windows") {
+            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", "-o genesInfo.csv")
             cmd <- findpython::find_python_cmd()
-            rOutput = system2(command = cmd, args=args, stdout = TRUE)
+            rOutput <- system2(command = cmd, args=args, stdout = TRUE)
+        } else {
+            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", "-o genesInfo.csv")
+            rOutput <- system2(command = path, args=args, stdout = TRUE)
         }
-        else {
-            args = c(ch, start, end, "call_snpSeek", "None")
-            rOutput = system2(command = path, args=args, stdout = TRUE)
+
+        ##Display error if appeared and stop the execution
+        error <- FALSE
+        for (i in seq (1, length(rOutput))) {
+            if (showError(rOutput[i])) {
+                error <- TRUE
+           }     
         }
-        
-        
-        #rOutput = system2(command=path, args=args, stdout=TRUE)
-        
-        lapply(1 : length(rOutput),
-               function(x) returnError(rOutput[x]))
-        
-        rOutput <- lapply(1 : length(rOutput),
-                          function(x) getOutPutJSON(rOutput[x]))
-        
-        rOutput[sapply(rOutput, is.null)] <- NULL
-        
-        ##print(rOutput)
-        
-        
-        if (length(rOutput) > 0) {
-            #print(rOutput)
-            #jsonOutput <- fromJSON(rOutput[[1]])
-            
-            listIds <- lapply(1 : length(rOutput),
-                              FUN = function(x) id(rOutput[[x]]))
+        if (!error) {
+            rOutput <- read.csv2("genesInfo.csv", sep = ',')
+        } else {
+            stop("The database call generates an error")
         }
-        
-        ##Remove all the NULL object from the list
-        listIds[sapply(listIds, is.null)] <- NULL
-        
-        ##remove double ids
-        listIds <- lapply(1 : length(listIds),
-                          FUN = function(x) noDoubleIds(listIds[[x]]))
-        
-        ##to get only one list !!
-        liste <- list()
-        lapply(1 : length(listIds),
-               FUN = function(x){liste <<- append(liste,listIds[[x]])})
-        
-        ##print(liste)
-        return (liste)
-    }
-    else {
+
+        ##Delete the temporal csv file
+        file.remove("genesInfo.csv")
+
+        ##Get only the information we want
+        genesIds <- data.frame("Rap_ID" = rOutput$uniquename,
+                               "Msu7_name" = rOutput$msu7Name, 
+                               "Iric_name" =  rOutput$iricname)
+
+        return (genesIds)
+
+    } else {
         return (list())
     }
 }
 
 #' CallSnpSeek
 #' 
-#' It will return a list of IDs and msu7Name
+#' It will return a list of Genes IDs (RapDB, Msu7 and Iric format)
 #' 
-#' @param locus the list of locus for which we want the ids
+#' @param locus the list of locus for which we want the ids as a Data Frame
 #' @return the list of id's of each genes we want
 #' @export
 #' @rdname callSnpSeek-function
@@ -185,23 +171,13 @@ callSnpSeek <- function(locus){
     
     listIds <- data.frame()
     
-    if (length(locus) > 0) {
-        ##We call the function creationGeneDB1 to create our newGene
-        listIds <- lapply(1 : nrow(locus),
-                          FUN = function(x) getIds(x, locus))
-        
-        
-        ##Remove all the NULL object from the list
-        listIds[sapply(listIds, is.null)] <- NULL
-        
-        ##To delete all the geneDB1 which exists in double
-        listIds <- unique(listIds)
-        
-        ##print(listIds)
-        return (listIds)
+    if (nrow(locus) > 0) {
+       for (i in seq(1, nrow(locus))) {
+            listIds <- rbind(listIds, getIds(i, locus))
+        } 
     }
-    else {
-        return (list())
-    }
-    
+    return (listIds)
 }
+
+
+

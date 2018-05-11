@@ -1,0 +1,198 @@
+---
+title: "Test1"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{test1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+## Informations about the vignette
+
+In this vignette, you will find how to use the **rRice** package and it will be illustrated by examples. 
+To use this package, you will have to create an experiment and then you will be able to work with it :
+* Interrogate the databases
+* Add manually databases
+* Create an array with specific genes and properties
+
+## Examples
+
+### 1.) Create an experiment and add databases
+
+The first thing you will have to do to use the package is to create a new experiment with the `createExperiment(name, locus)` function :
+```
+locus <- data.frame(ch = c("1"), st = c("148907"), end = c("248907"))
+experiment <- createExperiment("newExperiment", locus)
+```
+
+Then you will have to follow instructions :
+* First you will have to tell how many databases you want to experiment
+* Then you will have to give the date of your experiment
+* Finally, you will have to choose which databases to choose
+    
+After succeeding these steps, you will have an operational `experiment` you will be able to use. 
+
+Example :
+```
+> locus <- data.frame(ch = c("1"), st = c("148907"), end = c("248907"))
+> experiment <- createExperiment("newExperiment", locus)
+How many databases do you want to experiment ? :1
+Enter the date of the experiment (mm/dd/yyyy) : 09/17/2016
+loading informations...
+The list of the databases : 
+1 for RAPDB 
+2 for Gramene 
+3 for Oryzabase 
+4 for IC4R 
+5 for Planttfdb 
+6 for PLNTFDB 
+7 for Funricigenes 
+8 for Funricigenes2 
+9 for Funricigenes3 
+10 for MSU7 
+1
+```
+Then wait for few seconds that your RAPDB database has been well-added to your experiment
+
+### 2.) Consult your experiment
+
+If you want to collect the informations about your `experiment` :
+* name : `experiment@name`
+* date : `experiment@date`
+* databases : `experiment@databases` will return all the databases you have add to your experiment
+* genes : `experiment@genes` will return the list of the genes of all the databases you interrogated
+* properties : `experiment@properties` will return the list of the properties you selected with `selectProperties(...)`
+* others : `experiment@others` will contain a list with your personal informations you added with the function `addAttribute(...)`
+
+Example :
+```
+> experiment@name
+[1] "newExperiment"
+> experiment@databases
+[[1]]
+[1] "RAPDB"
+```
+
+### 3.) Add new databases to the experiment
+
+If you wish to add new databases in your variable `experiment` :
+```
+experiment <- addDBs(experiment)
+```
+
+Then you will have to select the number of databases you want to add to your experiment and to choose which database to interrogate. 
+
+Example :
+```
+> experiment <- addDBs(experiment)
+How many databases do you want to experiment ? :1
+The list of the databases : 
+1 for RAPDB 
+2 for Gramene 
+3 for Oryzabase 
+4 for IC4R 
+5 for Planttfdb 
+6 for PLNTFDB 
+7 for Funricigenes 
+8 for Funricigenes2 
+9 for Funricigenes3 
+10 for MSU7 
+2
+loading informations of the database...
+```
+Then wait for few seconds that your RAPDB database has been well-added behind your preexisting databases
+Notice that your number of databases of your experiment has been modified :
+```
+> experiment@databases
+[[1]]
+[1] "RAPDB"
+
+[[2]]
+[1] "Gramene"
+```
+
+### 4.) Add manually a new database to the experiment
+
+If you have a personal database you would like to integrate to your variable `experiment` :
+```
+experiment <- createNewDB(experiment)
+```
+
+Then you will have to give few informations about your new database you want to integrate in your experiment : 
+* Name of the new database
+* The type if id of the first column of the file you want to import (rapdb or msu)
+* The separator which is used in the file to separate every datas 
+* The path toward the file you want to import
+
+Example : 
+```
+> experiment <- createNewDB(experiment)
+Your file has to be built as follow : 
+First line is composed with all the names of the attributes
+Others lines composed with all the values of the genes
+Write the name of your new db :newDB
+What kind of typeID is on the first row of your file (1 : msu; 2 : rapdb) : 2
+Which separator is used in your file ? :,
+Write the absolute path until your file :/path/towards/my/file.txt
+```
+Then the new database `newDB` has been well-added to your `experiment` variable and you will find all the genes you added in `experiment@genes`
+
+### 5.) Others useful functions
+
+#### a.) addAttribute function
+If you want to add personal informations for your experiment then use this functions as follows :
+```
+> experiment <- addAttribute(experiment, "newAttribut", "1")
+> experiment@others
+[[1]]
+newAttribut 
+        "1" 
+```
+
+#### b.) Create an array with specific genes and properties selected by the user
+
+After you added a lot of databases in your variable `experiment`, you may want to create an array with only few genes and few properties. 
+To do so, you will have to :
+#### 1.) selectProperties function
+
+The goal of this function is to select only the properties of your differents databases of your experiment you want to study :
+```
+> experiment <- selectProperties(experiment, list("RAPDB.id", "Gramene.geneIdx", "Gene.attribut1"))
+> experiment@properties
+[[1]]
+[1] "RAPDB.id"
+
+[[2]]
+[1] "Gramene.geneIdx"
+
+[[3]]
+[1] "Gene.attribut1"
+
+```
+
+#### 2.) selectGenes function
+
+The goal of this function is to select only the genes of your databases of your experiment you want to study.
+The first argument of your function `selectGenes` is the `experiment`, the second is the list of genes you want to study `listeGenes` (rapdb or msu) and the last refer the type of id genes there are in `listeGenes`.
+
+Example :
+```
+> listeGenes <- list("Os01g0104600","Os01g0104400")
+> experiment <- selectGenes(experiment, listeGenes, "RAPDB")
+```
+
+#### 3.) getProperties function
+
+Thanks to 1.) and 2.) we will be able to create an array only with the genes and properties selected above.
+The first argument of the `getProperties` function is your variable `experiment` and the second represents which id of the gene will be present in the array (rapdb or msu).
+
+Example :
+```
+> getProperties(experiment, "RAPDB")
+                     rapdb.id gramene.geneidx gene.attribut1
+Os01g0104400 OsNippo01g013050              72             12
+Os01g0104600 OsNippo01g013200              75             14
+```
