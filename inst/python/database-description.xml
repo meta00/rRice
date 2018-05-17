@@ -216,4 +216,15 @@
             <field>Pfam_clan</field>
         </fields>
     </database>  
+    <database dbname="kegg_ko" type="text/html" method="GET">
+        <link stern="http://www.genome.jp/dbget-bin/www_bget?" aft=""/>
+        <headers>
+            <header>Definition</header>
+        </headers>
+        <fields>
+            <field lowercase="true" op=":">ko</field>
+        </fields>
+        <data_struct indicator="html" identifier="" line_separator="body" cell_separator="p"/>
+        <prettify replaceBy=''>((^(?!DEFINITION.*).*)&(^(?!DESCRIPTION.*).*))|\n|(DEFINITION *)|(DESCRIPTION *)</prettify>
+    </database>
 </databases>
