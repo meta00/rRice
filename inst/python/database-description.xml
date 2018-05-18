@@ -54,7 +54,13 @@
     <database dbname="gramene" type="text/JSON" method="GET" normalize="false">
         <link stern="http://data.gramene.org/v56/genes?" aft=""/>
         <fields>
-            <field op="=">q</field>
+            <field op="=">name</field>
+        </fields>
+    </database>
+    <database dbname="plaza" type="text/html" method="GET">
+        <link stern="https://bioinformatics.psb.ugent.be/plaza/versions/plaza_v4_monocots/genes/view/" aft=""/>
+        <fields>
+            <field op=""></field>
         </fields>
     </database>
     <database dbname="ic4r" type="text/html" method="GET">
@@ -73,6 +79,13 @@
         </fields>
         <data_struct indicator="table" identifier="id" identification_string="dataTable" line_separator="tr" cell_separator="td"/>
         <prettify replaceBy=''>\n>LOC_.*\n|\n|\r|\t</prettify>
+    </database>
+    <database dbname="rpan" type="text/html" method="GET">
+        <link stern="http://cgm.sjtu.edu.cn/3kricedb/searchByGene.php?" aft=""/>
+        <headers></headers>
+        <fields>
+            <field op="=">gene_id</field>
+        </fields>
     </database>
     <database dbname="plntfdb" type="text/html" method="GET">
         <link stern="http://plntfdb.bio.uni-potsdam.de/v3.0/get_id.php?" aft=""/>
