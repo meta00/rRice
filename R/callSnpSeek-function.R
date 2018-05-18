@@ -83,101 +83,151 @@
     
 #}
 
-#' getIds
-#'
-#' This function is called for each locus and has to return the list of ids 
-#' present in the locus
+#' genesIds
 #' 
-#' @param i number
-#' @param locusList list
-#' @return This function will return a list with all the ids from a locus
-#' @importFrom jsonlite fromJSON
+#' It will return a list of IDs (in RapDB, Msu7 and Iric format) of genes
+#' for each locus of the locus list
+#' 
+#' @param locusList the list of locus for which we want the genes IDs
+#' @return the list of IDs of each gene present in the locuses 
+#' @rdname genesIds-function
+#' @examples 
+#' locusList <- read.table(file = ".../locusList.txt", col.names = c("ch","start","end"))              
+#' genesIds(locusList)
+
+genesIds <- function(locusList){
+    listIds <- data.frame()
+    badFormat <- FALSE
+    apply(locusList, 1, checkInput)
+    
+    #lapply( split(locusList, seq( nrow(locusList))), getIds)
+
+    for (i in seq(1 : nrow(locusList))) {
+            listIds <- rbind(listIds, callSnpSeek(locusList[i,]))
+     } 
+
+    return (listIds)
+}
+
+
+#' callSnpSeek
+#'
+#' This function makes a SnpSeek DB call for a locus and has to return the list of ids 
+#' present in this locus
+#' 
+#' @param locus The locus we want to get the genes IDs 
+#' @return This function will return a list which contains the genes ids present in a locus
 #' @importFrom findpython find_python_cmd
-#' @rdname getIds-function
-getIds <- function (i, locusList) {
-    ##PATH for package when it will be installed -> when it will be released
+#' @rdname callSnpSeek-function
+#' @example
+#' 
+
+callSnpSeek <- function(locus) {
+    ##Changing the working directory to give access at python files no matter the user current directory
+    ## (Because database-description.xml is called at current directory in python code)
+    wd <- getwd()
+    python <- system.file("python",
+                          package = "rRice")
+    setwd(python)
+
+    ##Path of python db call file, run.py
     path <- system.file("python",
                         "run.py",
                         package = "rRice")
+    if ( whichOS() == "Windows"){ path <- shortPathName(path) }
     
-    ##manage the spaces -> for example "Program Files" under windows will 
-    ##generate an error because with system2 we generate a command line
-    ##with multiple arguments in one string. 
-    if (Sys.info()["sysname"] == "Windows"){
-        path <- shortPathName(path)
-    }
-    
-    if (as.integer(locusList[i,1]) < 10) {
-        ch <- paste("chr0", locusList[i,1], sep = "")
-    } else {
-        ch <- paste("chr", locusList[i,1], sep = "")
-    }
+    ch <- as.integer(locus[[1]])
+    start <- as.integer(locus[[2]])
+    end <- as.integer(locus[[3]])
 
-    start <- as.character(locusList[i,2])
-    end <- as.character(locusList[i,3])
+    if (ch >= 10 && ch <= 12) {
+        ch <- paste("chr", locus[[1]], sep = "")
+
+    } else if (ch < 10 && ch > 0) {
+        ch <- paste("chr0", locus[[1]], sep = "")
+    }   
+
+
+    tmpFile <- tempfile(pattern = "", fileext = ".csv")
     
     if (ch != "" && start != "" && end != "") {
         ##Call run.py from python
-        if (Sys.info()["sysname"] == "Windows") {
-            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", "-o genesInfo.csv")
+        if ( whichOS() == "Windows") {
+            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", paste("-o", tmpFile, sep=" "))
             cmd <- findpython::find_python_cmd()
             rOutput <- system2(command = cmd, args=args, stdout = TRUE)
         } else {
-            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", "-o genesInfo.csv")
+            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", paste("-o", tmpFile, sep=" "))
             rOutput <- system2(command = path, args=args, stdout = TRUE)
         }
 
-        ##Display error if appeared and stop the execution
+        print( paste(ch, start, end, ":", rOutput[2], sep=" "))  #DEV
+        
+        ##Display errors if appeared and then stop the execution
         error <- FALSE
-        for (i in seq (1, length(rOutput))) {
-            if (showError(rOutput[i])) {
-                error <- TRUE
-           }     
-        }
+        if ( !grepl("Query exported to", rOutput[2])) {
+            error <- TRUE
+            errorMessage <- unlist( lapply( seq_along(rOutput), FUN = function(x) showError(rOutput[x])))
+        } 
         if (!error) {
-            rOutput <- read.csv2("genesInfo.csv", sep = ',')
+            ##Read of generated csv file only if there is no error
+            rOutput <- read.csv2(tmpFile, na.string = "", sep = ',')
         } else {
-            stop("The database call generates an error")
-        }
-
-        ##Delete the temporal csv file
-        file.remove("genesInfo.csv")
+            stop(errorMessage)
+        }      
 
         ##Get only the information we want
         genesIds <- data.frame("Rap_ID" = rOutput$uniquename,
                                "Msu7_name" = rOutput$msu7Name, 
                                "Iric_name" =  rOutput$iricname)
 
-        return (genesIds)
+        ##Back to original user working directory
+        setwd(wd)
 
+        return (genesIds)
     } else {
         return (list())
     }
 }
 
-#' CallSnpSeek
+
+#' checkInput
 #' 
-#' It will return a list of Genes IDs (RapDB, Msu7 and Iric format)
+#' Check if the input is in a good format, if not, stop the program 
+#' and displays the error
 #' 
-#' @param locus the list of locus for which we want the ids as a Data Frame
-#' @return the list of id's of each genes we want
-#' @export
-#' @rdname callSnpSeek-function
-#' @examples 
-#' locusList <- data.frame()
-#'                   
-#' callSnpSeek(locusList)
-callSnpSeek <- function(locus){
+#' @param locus The locus we want to get the genes IDs 
+#' @rdname checkInput-function
+
+checkInput <- function(locus){
+
+    ch <- as.integer(locus[[1]])
+    start <- as.integer(locus[[2]])
+    end <- as.integer(locus[[3]])
+
+    msg <- ""
+
+    if (length(locus) != 3) {
+        msg <- paste(msg, "Input is not on a good format" , sep = '\n')
+
+    } else if ( nrow(locusList) == 0 ) {
+        msg <-  paste(msg, "Input is empty" , sep = '\n')
+
+    } else if (is.na(ch) || is.na(start) || is.na(end)) {
+        msg <-  paste(msg, 
+                paste("Not number values in", locus[[1]], locus[[2]], locus[[3]]), sep = '\n')
     
-    listIds <- data.frame()
-    
-    if (nrow(locus) > 0) {
-       for (i in seq(1, nrow(locus))) {
-            listIds <- rbind(listIds, getIds(i, locus))
-        } 
+    } else if (ch < 1 || ch > 12 ) {
+        msg <-  paste(msg,
+                paste("Wrong chromosone number in", ch, start, end), sep = '\n')
+
+    } else if (start < 0 || end < 0 || end < start) {
+        msg <- paste(msg,
+               paste("Wrong locus in", ch, start, end), sep = '\n')
     }
-    return (listIds)
+
+    if (msg != "") { stop(msg) }
+
+    return()
 }
-
-
 

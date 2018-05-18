@@ -1989,3 +1989,95 @@ callDB10 <- function (IdsList, locusList) {
         stop("IdsList has to be a list")
     }
 }
+
+
+
+
+
+
+#' 
+#'
+#' 
+#' 
+#' @param 
+#' @param 
+#' @return 
+#' @importFrom 
+#' @importFrom 
+#' @rdname getIds-function
+callDB <- function (database, locusList) {
+    ##PATH for package when it will be installed -> when it will be released
+    path <- system.file("python",
+                        "run.py",
+                        package = "rRice")
+    
+    ##manage the spaces -> for example "Program Files" under windows will 
+    ##generate an error because with system2 we generate a command line
+    ##with multiple arguments in one string. 
+    
+
+    if (Sys.info()["sysname"] == "Windows"){
+        path <- shortPathName(path)
+    }
+    
+
+
+    for ( i in seq (1, nrow(loccusList))) {
+        if (as.integer(locusList[i,1]) < 10) {
+            ch <- paste("chr0", locusList[i,1], sep = "")
+        } else {
+            ch <- paste("chr", locusList[i,1], sep = "")
+        }
+
+        start <- as.character(locusList[i,2])
+        end <- as.character(locusList[i,3])
+    
+
+
+    if (ch != "" && start != "" && end != "") {
+        ##Call run.py from python
+        if (Sys.info()["sysname"] == "Windows") {
+            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", "-o genesInfo.csv")
+            cmd <- findpython::find_python_cmd()
+            rOutput <- system2(command = cmd, args=args, stdout = TRUE)
+        } else {
+            args <- c(path, "snpseek", ch, start, end, "rap", "-f csv", "-o genesInfo.csv")
+            rOutput <- system2(command = path, args=args, stdout = TRUE)
+        }
+
+        ##Display error if appeared and stop the execution
+        error <- FALSE
+        for (i in seq (1, length(rOutput))) {
+            if (showError(rOutput[i])) {
+                error <- TRUE
+           }     
+        }
+        if (!error) {
+            rOutput <- read.csv2("genesInfo.csv", sep = ',')
+        } else {
+            stop("The database call generates an error")
+        }
+
+        ##Delete the temporal csv file
+        file.remove("genesInfo.csv")
+
+        ##Get only the information we want
+        genesIds <- data.frame("Rap_ID" = rOutput$uniquename,
+                               "Msu7_name" = rOutput$msu7Name, 
+                               "Iric_name" =  rOutput$iricname)
+
+        return (genesIds)
+
+    } else {
+        return (list())
+    }           
+
+
+
+
+
+
+
+    }
+   return()
+}

@@ -15,11 +15,12 @@
 #' locusListExample <- data.frame(ch = c("1"),st = c("148907"),end = c("248907"))
 #'
 #' Exemple file provided in the package :
-#' locusList <- read.table(file = "locusList.txt", col.names = c("ch","start","end")) 
+#' locusList <- read.table(file = ".../locusList.txt", col.names = c("ch","start","end")) 
 #' 
 #' createExperiment("example",locusList)
 
 createExperiment <- function(name, locus){
+
 
     ## User choice of databases
     databasesList()
@@ -34,14 +35,14 @@ createExperiment <- function(name, locus){
             choosenDBs <- unlist(input)
         }
         nbdb <- length(choosenDBs)
-        databases <- vector(mode='list', length=nbdb)
+        databases <<- vector(mode='list', length=nbdb)
         for (i in seq(1, nbdb)) {
             if ( is.na( as.numeric(choosenDBs[i]) ) || as.numeric(choosenDBs[i]) > databasesAvailables() ) { 
                 correctInput <- FALSE
                 message("Please write it in the asked format")
                 break;
             }
-                databases[[i]] <- changeNumberIntoDBName( as.numeric(choosenDBs[i]) )
+                databases[[i]] <<- changeNumberIntoDBName( as.numeric(choosenDBs[i]) )##
             }
         }
 
@@ -65,15 +66,15 @@ createExperiment <- function(name, locus){
         message("It can take a moment")
 
         ##Getting all the geneIds of the locuses
-        genesIds <- callSnpSeek(locus)
-        View(genesIds) ## DEV 
+        genesIds <- genesIds(locus)
+        View(genesIds) ## DEV
 
-        ##Creating of the list which will have the genes of the databases
+        ##Creating of the list which will have the genes of the databases DB calls
         genes <- list()
         for (i in seq(1, nbdb)) {
-               message( paste("Loading information of the database", databases[[i]], "...", sep=" "))
-               ###showError(....)               ////Ne pas la gestion des erreurs 
-               #### callDB <- paste("callDB",
+               message( paste("Loading information from", databases[[i]], "...", sep=" "))
+               ###showError(....)               ////Ne pas oublier la gestion des erreurs 
+               ##callDB <- paste("callDB",
                ####                 changeDBNameIntoNumber(databases[i]),
                ####                 sep="")
                #### genes[[i]] <- (do.call(callDB, args = list(genesIds, locus)))                
