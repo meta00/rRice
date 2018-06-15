@@ -1,7 +1,1 @@
-Notes/
-.vscode/
 __pycache__/
-.gitignore
-test_query/
-data/
-.ipynb_checkpoints/
