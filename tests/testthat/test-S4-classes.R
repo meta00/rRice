@@ -1,3 +1,5 @@
+context("s4-classes.R")
+
 geneTest1 <- new("RAPDB",
                  id="test1", locus=data.frame(),
                  others=list(),

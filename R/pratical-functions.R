@@ -18,21 +18,10 @@ existsGene <- function(genes, id){
 
 #' Function to know the OS using the package
 #'
-#' this function allows us to know if the user is using Linux or Windows
-#' 
-#' @return numeric 0 if windows, 1 if linux
+#' @return character OS Name
 #' @rdname whichOS-function
 whichOS <- function(){
-    found <- 0
-    
-    debut = getwd()
-    if (substr(debut, 0,1) == '/') ##ubuntu
-        found <- 1
-    else ##windows
-        found <- 0
-    
-    ##print(found)
-    return(found)
+    return(Sys.info()["sysname"])
 }
 
 #' Function checking if the database is already used
@@ -55,32 +44,31 @@ alreadyUsedDB <- function(databases,i){
     return(alreadyUsed)
 }
 
-#' Function which shows errors in DB calls
+#' Function for return, if exists, error in a DB Call
 #'
-#' This function shows known errors that may appear in a DB call, 
+#' This function return known errors that may appear in a DB call, 
 #' 
 #' @param outPut character
-#' @return Boolean TRUE if the DB call return an error, FALSE if not
+#' @return The output line which contains the error to be displayed
 #' @rdname showError-function
 showError <- function (outPut) {
 
-    error <- FALSE
-    if ( grepl("Website maintenance", outPut) ||
-         grepl("Bad request", outPut) ||
-         grepl("Forbidden", outPut) ||
-         grepl("Not found", outPut) ||
-         grepl("Too Many Requests", outPut) ||
-         grepl("Internal Server Error", outPut) ||
-         grepl("Gateway Timeout", outPut) ||
-         grepl("Service Unavailable", outPut) ||
-         grepl("HTTP Version Not Supported", outPut) ||
-         grepl("Unknow internet error", outPut) ||
-         grepl("Exception", outPut))
+    if ( grepl("WEBSITE MAINTENANCE", toupper(outPut)) ||
+         grepl("BAD REQUEST", toupper(outPut)) ||
+         grepl("FORBIDDEN", toupper(outPut)) ||
+         grepl("NOT FOUND", toupper(outPut)) ||
+         grepl("TOO MANY REQUESTS", toupper(outPut)) ||
+         grepl("INTERNAL SERVER ERROR", toupper(outPut)) ||
+         grepl("GATEWAY TIMEOUT", toupper(outPut)) ||
+         grepl("SERVICE UNAVAILABLE", toupper(outPut)) ||
+         grepl("HTTP VERSION NOT SUPPORTED", toupper(outPut)) ||
+         grepl("UNKNOWN INTERNET ERROR", toupper(outPut)) ||
+         grepl("ERROR", toupper(outPut)))
     {
-         message(outPut)
-         error <- TRUE
+        return (outPut)
+    } else {
+        return ()
     }
-    return (error)
 }
 
 #' Function for parsing a JSON format to Data Frame
